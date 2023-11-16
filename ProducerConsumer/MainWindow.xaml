@@ -3,10 +3,43 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ProducerConsumer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="500" Width="800"
+        Background="LightGray">
     <Grid>
+        <!-- Text Input -->
+        <StackPanel Orientation="Vertical" 
+                    HorizontalAlignment="Stretch" 
+                    VerticalAlignment="Top" 
+                    Margin="50 30">
+            <Label Content="Input text" 
+                   FontSize="26"/>
+            <TextBox x:Name="textInput"
+                     FontSize="24"
+                     TextChanged="TextInput_TextChanged"/>
+        </StackPanel>
 
+
+        <!-- Vertical Fields -->
+        <StackPanel Orientation="Vertical"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    Margin="50 110">
+            <Label Content="Consumer with letters" FontWeight="Bold" Margin="0 20 0 0"/>
+            <TextBox x:Name="field1"
+                     IsReadOnly="True"
+                     TextWrapping="Wrap"
+                     FontSize="24px" />
+            <Label Content="Consumer with digits" FontWeight="Bold" Margin="0 20 0 0"/>
+            <TextBox x:Name="field2"
+                     IsReadOnly="True"
+                     TextWrapping="Wrap"
+                     FontSize="24px" />
+            <Label Content="Consumer with other chars" FontWeight="Bold" Margin="0 20 0 0"/>
+            <TextBox x:Name="field3"
+                     IsReadOnly="True"
+                     TextWrapping="Wrap"
+                     FontSize="24px" />
+        </StackPanel>
     </Grid>
 </Window>
