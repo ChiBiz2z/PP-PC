@@ -9,13 +9,13 @@ namespace ProducerConsumer
 {
     public partial class MainWindow : Window
     {
-        private readonly RingBuffer<char> _circularBuffer;
+        private readonly RingBuffer _circularBuffer;
         private readonly CancellationTokenSource _cancellationTokenSource;
 
         public MainWindow()
         {
             InitializeComponent();
-            _circularBuffer = new RingBuffer<char>(10);
+            _circularBuffer = new RingBuffer(10);
             _cancellationTokenSource = new CancellationTokenSource();
             StartConsumers();
         }
@@ -24,7 +24,7 @@ namespace ProducerConsumer
         {
             if (sender is TextBox textBox)
             {
-                _circularBuffer.Enqueue(textBox.Text.ToCharArray().FirstOrDefault());
+                _circularBuffer.Enqueue(textBox.Text);
                 textBox.TextChanged -= TextInput_TextChanged;
                 textBox.Text = string.Empty;
                 textBox.TextChanged += TextInput_TextChanged;
@@ -42,17 +42,10 @@ namespace ProducerConsumer
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                if (_circularBuffer.CheckDeq(predicate))
+                var data = _circularBuffer.Dequeue(predicate);
+                if (!string.IsNullOrEmpty(data))
                 {
-                    var data = _circularBuffer.Dequeue();
-                    if (!string.IsNullOrEmpty(data.ToString()))
-                    {
-                        Dispatcher.Invoke(() => textBox.Text += data);
-                    }
-                }
-                else
-                {
-                    Thread.Sleep(1);
+                    Dispatcher.Invoke(() => textBox.Text += data);
                 }
             }
         }

@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 
 namespace ProducerConsumer;
 
-public class RingBuffer<T>
+public class RingBuffer
 {
-    private readonly T[] _buffer;
+    private readonly string[] _buffer;
     private readonly int _capacity;
     private int _head;
     private int _tail;
@@ -19,9 +20,8 @@ public class RingBuffer<T>
         if (capacity <= 0)
             throw new ArgumentException("Capacity must be greater than zero.");
 
-
         _capacity = capacity;
-        _buffer = new T[capacity];
+        _buffer = new string[capacity];
         _head = 0;
         _tail = 0;
 
@@ -30,18 +30,7 @@ public class RingBuffer<T>
         _mutex = new SemaphoreSlim(1, 1);
     }
 
-    public bool CheckDeq(Predicate<T> predicate)
-    {
-        _full.Wait();
-        _mutex.Wait();
-        var result = predicate(_buffer[_head]);
-        _mutex.Release();
-        _full.Release();
-        return result;
-    }
-
-
-    public void Enqueue(T item)
+    public void Enqueue(string item)
     {
         _empty.Wait();
         _mutex.Wait();
@@ -51,15 +40,23 @@ public class RingBuffer<T>
         _full.Release();
     }
 
-
-    public T Dequeue()
+    public string Dequeue(Predicate<char> predicate)
     {
         _full.Wait();
         _mutex.Wait();
+        var check = predicate(_buffer[_head].ToCharArray().FirstOrDefault());
         var item = _buffer[_head];
-        _head = (_head + 1) % _capacity;
+        if (check)
+        {
+            _head = (_head + 1) % _capacity;
+            _empty.Release();
+        }
+        else
+        {
+            _full.Release();
+        }
+
         _mutex.Release();
-        _empty.Release();
-        return item;
+        return check ? item : string.Empty;
     }
 }
